@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 1000px; height: 1000px; flex: 0 0 auto;">
+        <canvas id="solarSystem" width="1000" height="1000" style="border: 1px solid black"></canvas>
+    </div>
+    <script>
+        var SECONDS_PER_YEAR = 2;
+        var PIXELS_PER_AU = 500/30; // neptune is at 30 au, set this as the max
+        var EARTH_RADIUS_PIXELS = 3;
+
+        var time = 0.0;
+        var planets = [];
+        planets.push(new Planet(2, 0, 1, "gold")); //sun
+        planets.push(new Planet(EARTH_RADIUS_PIXELS*.383, PIXELS_PER_AU*.387, .241, "dimgrey")); //mercury
+        planets.push(new Planet(EARTH_RADIUS_PIXELS*.949, PIXELS_PER_AU*.723, .616, "goldenrod")); //venus
+        planets.push(new Planet(EARTH_RADIUS_PIXELS, PIXELS_PER_AU, 1, "green")); //earth
+        planets.push(new Planet(EARTH_RADIUS_PIXELS*.532, PIXELS_PER_AU*1.52, 1.882, "chocolate")); //mars
+        planets.push(new Planet(EARTH_RADIUS_PIXELS*11.21, PIXELS_PER_AU*5.2, 11.862, "sandybrown")); //jupiter
+        planets.push(new Planet(EARTH_RADIUS_PIXELS*9.45, PIXELS_PER_AU*9.58, 29.456, "salmon")); //saturn
+        planets.push(new Planet(EARTH_RADIUS_PIXELS*4.01, PIXELS_PER_AU*19.2, 84.07, "mediumpurple")); //uranus
+        planets.push(new Planet(EARTH_RADIUS_PIXELS*3.88, PIXELS_PER_AU*29, 164.81, "slateblue")); //neptune
+
+        var canvas = document.getElementById("solarSystem");
+        var ctx = canvas.getContext('2d');
+
+        setInterval(function() {
+            time += 1/(SECONDS_PER_YEAR*60);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (var i=0; i < planets.length; i++) {
+                planets[i].move(time);
+                ctx.beginPath();
+                ctx.fillStyle = planets[i].color;
+                ctx.ellipse(planets[i].x + 500, planets[i].y + 500, planets[i].radius, planets[i].radius, 0, 0, Math.PI*2);
+                ctx.fill();
+                ctx.closePath();
+            }
+
+        }, 1/60)
+
+        function Planet(radius, orbitRadius, period, color) {
+            this.radius = radius;
+            this.orbitRadius = orbitRadius;
+            this.period = period;
+            this.color = color;
+            this.x = orbitRadius - radius;
+            this.y = 0;
+
+            this.move = function(time) {
+                var angle = (time / SECONDS_PER_YEAR) * Math.PI * 2 / this.period;
+                this.x = (orbitRadius)*Math.cos(angle);
+                this.y = (orbitRadius)*Math.sin(angle);
+            }
+        }
+    </script>
+</body>
+</html>
